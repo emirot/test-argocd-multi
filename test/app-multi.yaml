@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/refresh: hard
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  sources:
+    - chart: elasticsearch
+      helm:
+        valueFiles:
+          - values.yaml
+      repoURL: https://helm.elastic.co
+      targetRevision: 7.6.0
+    - repoURL: https://github.com/argoproj/argocd-example-apps.git
+      path: guestbook
+      targetRevision: HEAD
+    - chart: elasticsearch
+      helm:
+        valueFiles:
+          - values.yaml
+      repoURL: https://helm.elastic.co
+      targetRevision: 7.7.0
